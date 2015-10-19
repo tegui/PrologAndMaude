@@ -1,0 +1,62 @@
+fmod OCURRENCIAS is
+protecting INT .
+protecting BOOL .
+
+sort ListInt .
+subsort Int < ListInt .
+
+op nilLint : -> ListInt [ctor] .
+op _ _ : ListInt ListInt -> ListInt [ctor assoc id: nilLint] .
+op podar(_) : ListInt -> ListInt .  ***podar ocurrencias multiples 3
+op _esta_ : Int ListInt -> Bool .
+op _intercon_ : ListInt ListInt -> ListInt . ***Intercalar listas 4
+op premiar(_,_,_) : Int Int ListInt -> ListInt .  ***Premiar 9
+op intercambiar(_) : ListInt -> ListInt . ***Intercambiar 12
+
+op min(_):
+
+
+vars L, M : ListInt .
+var I : Int .
+var J : Int .
+var K : Int .
+
+eq I esta I = true .
+eq I esta (I L) = true .
+eq I esta nilLint = false .
+ceq I esta J = false if (I =/= J) .
+ceq I esta (J L) = I esta L if (I =/= J) .
+
+
+
+***Podar
+eq podar( nilLint ) = nilLint .
+eq podar( I ) = I .
+ceq podar(I L) = I podar(L) if (not( I esta L )) .
+ceq podar(I L) = podar(L) if (I esta L) .
+
+
+***Intercalar
+eq nilLint intercon nilLint = nilLint .
+eq L intercon nilLint = L .
+eq nilLint intercon M = M .
+ceq (L) intercon (J M) = J (M intercon L) if ((L =/= nilLint) or (M =/= nilLint)) .
+
+
+
+***Premiar
+eq premiar( I , J , nilLint ) = nilLint .
+ceq premiar( I , J , (K L) ) = ( I + K ) L if (J < K) .
+ceq premiar( I , J  ,(K L) ) = K premiar( I , J , L ) if (J > K) .
+
+
+***Intercambiar
+eq intercambiar(J nilLint) = J .
+ceq intercambiar(I (J L)) =  intercambiar(J (I L)) if (J < I) .
+ceq intercambiar(I (J L)) =  I intercambiar(J L) if (I < J) .
+
+
+***minimo
+eq
+
+endfm
