@@ -1,0 +1,57 @@
+*** Tarea 3,4,5,9,12 en maude y prolog && quicksort estudiantes por nota.
+ fmod ESTU is
+ 
+ protecting INT .
+ protecting FLOAT .
+ protecting BOOL .
+ 
+ sort Estu .
+ sort LEstu .
+ subsort Estu < LEstu . ***una lista de un estudiante
+
+	op es : Int Float -> Estu [ctor] .
+	op nilLEstu : -> LEstu [ctor] . ***lista nula de estudiante
+	op _ _ : LEstu LEstu -> LEstu [ctor assoc id: nilLEstu] .
+	op _in!_ : Int LEstu -> Bool .
+	op <<_ : LEstu -> LEstu .
+	op _select<=_ : Float LEstu -> LEstu .
+	op select2<= : Float LEstu -> LEstu .
+	op select2<= : Float LEstu LEstu -> LEstu .
+	
+	op LE1 : -> LEstu .
+	op LE2 : -> LEstu .
+
+	vars E1 E2 : Estu .
+	vars LEST1 LEST2 : LEstu .
+	vars L AX AY : Float .
+	vars K J : Int .
+	
+	
+	eq K in! nilLEstu = false .
+	eq K in! (es(K, L) LEST1) = true .
+	ceq K in! (es(J, L) LEST1) = K in! LEST1 if(K =/= J) .
+	eq << nilLEstu = nilLEstu .
+	eq << (E1 LEST1) = (<< LEST1) E1 .
+	eq L select<= nilLEstu = nilLEstu .
+	ceq L select<= (es(K, AX) LEST1) = es(K, AX) (L select<= LEST1) if(L <= AX) .
+	ceq L select<= (es(K, AX) LEST1) = (L select<= LEST1) if(L > AX) .
+	eq select2<=(L, LEST1) = select2<=(L, LEST1, nilLEstu) .
+	ceq select2<=(L, es(K, AX) LEST1, LEST2) = select2<=(L, LEST1, LEST2 es(K, AX)) if(L <= AX) .
+	ceq select2<=(L, es(K, AX) LEST1, LEST2) = select2<=(L, LEST1, LEST2) if(L > AX) .
+	eq select2<=(L, nilLEstu, LEST2) = LEST2 .
+	eq LE1 = es(1, 2.0) es(2, 2.5) es(3, 3.0) es(4, 4.8) .
+	eq LE2 = es(5, 1.8) es(6, 2.8) es(7, 3.5) es(8, 4.4) .
+
+ endfm
+
+
+
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
