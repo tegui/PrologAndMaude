@@ -32,20 +32,21 @@ vars NM NA ML : String .
 vars CT PR VP PT N AC : Float .
 var HT : hotel .
 var LH : Lhotel .
+var V : viajero .
 
 eq calcular(N,hotel(IHO,NM,CT,NA,PR,VP),viajero(ID,ML,HT,PT)) = (0.03 * CT) * (N * PR) .  ***1.2
 ceq calcular(N,hotel(IHO,NM,CT,NA,PR,VP),viajero(ID,ML,HT,PT)) = (((N * PR) + ((0.03 * CT) * (N * PR))) - (VP * PT)) if ((N * PR) >= (PT * VP)) . 
 
 
 eq hallar(N,nilLhotel,viajero(ID,ML,HT,PT)) = nilLhotel .  ***2.2
-eq hallar(N,hotel(IHO,NM,CT,NA,PR,VP) LH,viajero(ID,ML,HT,PT)) = hallar(N,LH,viajero(ID,ML,HT,PT)) .
+eq hallar(N,hotel(IHO,NM,CT,NA,PR,VP) LH,V) = hallar(N,LH,V) .
 ceq hallar(N,hotel(IHO,NM,CT,NA,PR,VP) LH,viajero(ID,ML,HT,PT)) = hotel(IHO,NM,CT,NA,PR,VP) if ((CT >= 3.0) and (minx(N,LH,viajero(ID,ML,HT,PT),calcular(N,hotel(IHO,NM,CT,NA,PR,VP),viajero(ID,ML,HT,PT))))) .
 
 
+
 eq minx(N,nilLhotel,viajero(ID,ML,HT,PT),AC) = true .
-eq minx(N,hotel(IHO,NM,CT,NA,PR,VP),viajero(ID,ML,HT,PT),AC) = true .
-ceq minx(N,hotel(IHO,NM,CT,NA,PR,VP) LH,viajero(ID,ML,HT,PT),AC) = minx(N,LH,viajero(ID,ML,HT,PT),calcular(N,hotel(IHO,NM,CT,NA,PR,VP),viajero(ID,ML,HT,PT))) if (AC > calcular(N,hotel(IHO,NM,CT,NA,PR,VP),viajero(ID,ML,HT,PT))) . ***Revisar la comparación porque hasta aquí
-ceq minx(N,hotel(IHO,NM,CT,NA,PR,VP) LH,viajero(ID,ML,HT,PT),AC) = false if (AC > calcular(N,hotel(IHO,NM,CT,NA,PR,VP),viajero(ID,ML,HT,PT))) .
+ceq minx(N,hotel(IHO,NM,CT,NA,PR,VP) LH,viajero(ID,ML,HT,PT),AC) = minx(N,LH,viajero(ID,ML,HT,PT),calcular(N,hotel(IHO,NM,CT,NA,PR,VP),viajero(ID,ML,HT,PT))) if (AC < calcular(N,hotel(IHO,NM,CT,NA,PR,VP),viajero(ID,ML,HT,PT))) . ***Revisar la comparación porque hasta aquí
+ceq minx(N,hotel(IHO,NM,CT,NA,PR,VP) LH,viajero(ID,ML,HT,PT),AC) = false if (AC > )calcular(N,hotel(IHO,NM,CT,NA,PR,VP),viajero(ID,ML,HT,PT)) .
 
 
 endfm
