@@ -100,8 +100,14 @@ ceq esta(hospedado(IDD,HAB,N) LHOS,ID) = esta(LHOS,ID) if (ID =/= IDD) .
 ceq esta(hospedado(IDD,HAB,N) LHOS,ID) = 1 + esta(LHOS,ID) if (ID == IDD) .
 
 
-***eq recpt
+***Retornar un Float
+eq recpt(PT,ID,nilLhotel) = 0.0 .
+***eq recpt(PT,ID,hotel(IHO,NM,CT,NA,PR,VP,(hospedado(IDD,HAB,N) LHOS)) LH) =  PT + ((CT * 10.0) * estanoches((hospedado(IDD,HAB,N) LHOS),ID) * recpt(PT,ID,LH))
 
+***Me debe retornar la cantidad de noches para determinado hotel en un Float
+eq estanoches(nilLHosp,ID) = 0 .
+ceq estanoches(hospedado(IDD,HAB,N) LHOS,ID) = esta(LHOS,ID) if (ID =/= IDD) .
+ceq estanoches(hospedado(IDD,HAB,N) LHOS,ID) = N + esta(LHOS,ID) if (ID == IDD) .
 
 
 ***Listas de prueba Partes 1 y 2
