@@ -104,7 +104,7 @@ ceq esta(hospedado(IDD,HAB,N) LHOS,ID) = 1 + esta(LHOS,ID) if (ID == IDD) .
 
 ***Retornar un Float Recalcula los puntos
 eq recpt(PT,ID,nilLhotel) = 0.0 .
-eq recpt(PT,ID,hotel(IHO,NM,CT,NA,PR,VP,(hospedado(IDD,HAB,N) LHOS)) LH) =  PT + ((CT * 10.0) * estanoches((hospedado(IDD,HAB,N) LHOS),ID) * recpt(PT,ID,LH)) .
+eq recpt(PT,ID,hotel(IHO,NM,CT,NA,PR,VP,(hospedado(IDD,HAB,N) LHOS)) LH) =  PT + ((CT * 10.0) * estanoches((hospedado(IDD,HAB,N) LHOS),ID) + recpt(PT,ID,LH)) .
 
 ***Me debe retornar la cantidad de noches para determinado hotel en un Float
 eq estanoches(nilLHosp,ID) = 0.0 .
@@ -121,8 +121,6 @@ eq HPR = hotel(2,"hotel 2",4.0,"2849541",45000.0,1060.0) .
 eq via = viajero(23,"algoarroba",hotel(3,"hotel 3",5.0,"2456941",35000.0,890.0),25.0) .
 
 
-
-
 ***Lista de prueba parte 3
 
 eq LIHOS = hospedado(102,"104B",2.0) hospedado(105,"208A",2.0) hospedado(116,"207A",3.0) hospedado(102,"210B",5.0) hospedado(107,"104B",2.0) hospedado(102,"104B",2.0) .
@@ -130,8 +128,5 @@ eq LIHOS = hospedado(102,"104B",2.0) hospedado(105,"208A",2.0) hospedado(116,"20
 eq L2 = hotel(1,"hotel 1",3.0,"24569541",45000.0,260.0,hospedado(116,"207A",3.0) hospedado(102,"210B",5.0)) hotel(2,"hotel 2",4.0,"2849541",45000.0,1060.0,hospedado(116,"207A",3.0) hospedado(102,"210B",5.0)) hotel(3,"hotel 3",5.0,"2456941",35000.0,890.0,LIHOS) hotel(4,"hotel 4",5.0,"24569891",195000.0,2000.0,hospedado(116,"207A",3.0)) hotel(5,"hotel 5",2.0,"27569541",25000.0,10.0,hospedado(102,"104B",2.0)) hotel(6,"hotel 6",1.0,"28136596",15000.0,20.0,hospedado(116,"207A",3.0)) hotel(7,"hotel 7",2.0,"4589656",300.0,5.0,hospedado(102,"104B",2.0))  .
 
 eq LV1 = viajero(101,"algoarroba",hotel(3,"hotel 3",5.0,"2456941",35000.0,890.0),25.0)  viajero(102,"algoarroba",hotel(3,"hotel 3",5.0,"2456941",35000.0,890.0),25.0)  viajero(104,"algoarroba",hotel(3,"hotel 3",5.0,"2456941",35000.0,890.0),25.0)  viajero(105,"algoarroba",hotel(3,"hotel 3",5.0,"2456941",35000.0,890.0),25.0)  viajero(106,"algoarroba",hotel(3,"hotel 3",5.0,"2456941",35000.0,890.0),25.0)  viajero(107,"algoarroba",hotel(3,"hotel 3",5.0,"2456941",35000.0,890.0),25.0)  .
-
-
-
 
 endfm
