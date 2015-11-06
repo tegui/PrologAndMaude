@@ -40,6 +40,8 @@ op minx(_,_,_,_) : Float Lhotel viajero Float -> Bool .
 op recalcule(_,_) : Lhotel Lv -> Lv . ***3.2
 op fav(_,_,_,_) : Int Lhotel hotel Int -> hotel .
 op esta(_,_) : LHosp Int -> Int . ***revisa las estadias
+op recpt(_,_,_) : Float Int Lhotel -> Float .
+op estanoches(_,_) : LHosp Int -> Float .
 
 
 
@@ -85,7 +87,7 @@ ceq minx(N,hotel(IHO,NM,CT,NA,PR,VP) LH,V,AC) = minx(N,LH,V,AC) if (CT < 3.0) .
 
 eq recalcule(LH,nilLv) = nilLv . ***3.2
 eq recalcule(nilLhotel,LVIA) = LVIA .
-eq recalcule((hotel(IHO,NM,CT,NA,PR,VP,(HOSP LHOS)) LH),(viajero(ID,ML,HT,PT) LVIA)) = viajero(ID,ML,fav(ID,(hotel(IHO,NM,CT,NA,PR,VP,(HOSP LHOS)) LH),hotel(IHO,NM,CT,NA,PR,VP,(HOSP LHOS)),0),PT) recalcule(hotel(IHO,NM,CT,NA,PR,VP,(HOSP LHOS)) LH,LVIA) .
+eq recalcule((hotel(IHO,NM,CT,NA,PR,VP,(HOSP LHOS)) LH),(viajero(ID,ML,HT,PT) LVIA)) = viajero(ID,ML,fav(ID,(hotel(IHO,NM,CT,NA,PR,VP,(HOSP LHOS)) LH),hotel(IHO,NM,CT,NA,PR,VP,(HOSP LHOS)),0),recpt((PT / 2.0),ID,(hotel(IHO,NM,CT,NA,PR,VP,(HOSP LHOS)) LH))) recalcule(hotel(IHO,NM,CT,NA,PR,VP,(HOSP LHOS)) LH,LVIA) .
 
 
 
@@ -100,14 +102,14 @@ ceq esta(hospedado(IDD,HAB,N) LHOS,ID) = esta(LHOS,ID) if (ID =/= IDD) .
 ceq esta(hospedado(IDD,HAB,N) LHOS,ID) = 1 + esta(LHOS,ID) if (ID == IDD) .
 
 
-***Retornar un Float
+***Retornar un Float Recalcula los puntos
 eq recpt(PT,ID,nilLhotel) = 0.0 .
-***eq recpt(PT,ID,hotel(IHO,NM,CT,NA,PR,VP,(hospedado(IDD,HAB,N) LHOS)) LH) =  PT + ((CT * 10.0) * estanoches((hospedado(IDD,HAB,N) LHOS),ID) * recpt(PT,ID,LH))
+eq recpt(PT,ID,hotel(IHO,NM,CT,NA,PR,VP,(hospedado(IDD,HAB,N) LHOS)) LH) =  PT + ((CT * 10.0) * estanoches((hospedado(IDD,HAB,N) LHOS),ID) * recpt(PT,ID,LH)) .
 
 ***Me debe retornar la cantidad de noches para determinado hotel en un Float
-eq estanoches(nilLHosp,ID) = 0 .
-ceq estanoches(hospedado(IDD,HAB,N) LHOS,ID) = esta(LHOS,ID) if (ID =/= IDD) .
-ceq estanoches(hospedado(IDD,HAB,N) LHOS,ID) = N + esta(LHOS,ID) if (ID == IDD) .
+eq estanoches(nilLHosp,ID) = 0.0 .
+ceq estanoches(hospedado(IDD,HAB,N) LHOS,ID) = estanoches(LHOS,ID) if (ID =/= IDD) .
+ceq estanoches(hospedado(IDD,HAB,N) LHOS,ID) = N + estanoches(LHOS,ID) if (ID == IDD) .
 
 
 ***Listas de prueba Partes 1 y 2
@@ -133,7 +135,3 @@ eq LV1 = viajero(101,"algoarroba",hotel(3,"hotel 3",5.0,"2456941",35000.0,890.0)
 
 
 endfm
-
-
-
-
