@@ -1,8 +1,8 @@
 # PrologAndMaude
 Logical and functional programation sesions
 
-This files are for academical reasons.
+This files are for academical use.
 
-Course "logical and functional programming" 
+Signature: "logical and functional programming" 
 
 National University of Colombia, Medellin.
