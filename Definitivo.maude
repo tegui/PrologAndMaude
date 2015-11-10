@@ -1,0 +1,84 @@
+fmod PARCIAL is
+
+protecting INT .
+protecting STRING .
+protecting FLOAT .
+protecting BOOL .
+
+sort hotel . ***1.1
+sort viajero .
+sort Lhotel . ***2.1
+sort hospedado .
+sort LHosp .
+sort Lv . ***3.1
+
+subsort hotel < Lhotel . ***2.1
+subsort viajero < Lv . ***3.1
+subsort hospedado < LHosp .
+
+op hotel(_,_,_,_,_,_) : Int String Float String Float Float -> hotel [ctor] . ***1.1
+op hotel(_,_,_,_,_,_,_) : Int String Float String Float Float LHosp -> hotel [ctor] . ***Redefinición de un hotel recibiendo una lista de hospedados
+op viajero(_,_,_,_) : Int String String Float -> viajero [ctor] .
+
+op nilLhotel : -> Lhotel [ctor] . *** Operadores para el punto 2.1
+op _ _ : Lhotel Lhotel -> Lhotel  [ctor assoc id: nilLhotel] .
+
+op nilLv : -> Lv [ctor] . ***Lista de Viajeros
+op _ _ : Lv Lv -> Lv [ctor assoc id: nilLv] .
+
+op hospedado(_,_,_) : Int String Float -> hospedado [ctor] . ***Operadores para el punto 3, Información del hospedado
+op nilLHosp : -> LHosp [ctor] . ***Lista de hospedados
+op _ _ : LHosp LHosp -> LHosp [ctor assoc id: nilLHosp] . 
+
+op calcular(_,_,_) : Float hotel viajero -> Float . ***Punto 1.2
+op hallar(_,_,_) : Float Lhotel viajero -> hotel .  ***Punto 2.2
+op minx(_,_,_,_) : Float Lhotel viajero Float -> Bool . 
+op recalcule(_,_) : Lhotel Lv -> Lv . ***Punto 3.2
+op fav(_,_,_,_) : Int Lhotel String Int -> String .
+op esta(_,_) : LHosp Int -> Int . ***revisa las estadias
+op recpt(_,_,_) : Float Int Lhotel -> Float .
+op estanoches(_,_) : LHosp Int -> Float .
+
+vars IHO ID I IDD : Int .
+vars NM NA ML HAB NH : String .
+vars CT PR VP PT N AC : Float .
+var LH : Lhotel .
+var V : viajero .
+var LVIA : Lv .
+var HOSP : hospedado .
+var LHOS : LHosp .
+
+eq calcular(N,hotel(IHO,NM,CT,NA,PR,VP),viajero(ID,ML,NH,PT)) = (0.03 * CT) * (N * PR) .  ***Retorna el calculo del monto neto para N noches. (Float)
+ceq calcular(N,hotel(IHO,NM,CT,NA,PR,VP),viajero(ID,ML,NH,PT)) = (((N * PR) + ((0.03 * CT) * (N * PR))) - (VP * PT)) if ((N * PR) >= (PT * VP)) . 
+
+eq hallar(N,nilLhotel,V) = nilLhotel .  ***Halla el hotel más económico que sea mayor de 3 estrellas (Hotel)
+ceq hallar(N,hotel(IHO,NM,CT,NA,PR,VP) LH,V) = hotel(IHO,NM,CT,NA,PR,VP) if ((CT > 2.0) and minx(N,LH,V,calcular(N,hotel(IHO,NM,CT,NA,PR,VP),V))) .
+ceq hallar(N,hotel(IHO,NM,CT,NA,PR,VP) LH,V) = hallar(N,LH,V) if (((CT > 2.0) and not(minx(N,LH,V,calcular(N,hotel(IHO,NM,CT,NA,PR,VP),V)))) or (CT < 3.0)) .
+***ceq hallar(N,hotel(IHO,NM,CT,NA,PR,VP) LH,V) = hallar(N,LH,V) if (CT < 3.0) .
+
+eq minx(N,nilLhotel,viajero(ID,ML,NH,PT),AC) = true . ***OP Auxiliar para 2.2
+ceq minx(N,hotel(IHO,NM,CT,NA,PR,VP) LH,V,AC) = false if ((CT > 2.0) and (AC > (calcular(N,hotel(IHO,NM,CT,NA,PR,VP),V)))) .
+ceq minx(N,hotel(IHO,NM,CT,NA,PR,VP) LH,V,AC) = minx(N,LH,V,AC) if ((CT > 2.0) and (AC < calcular(N,hotel(IHO,NM,CT,NA,PR,VP),V))) .
+ceq minx(N,hotel(IHO,NM,CT,NA,PR,VP) LH,V,AC) = minx(N,LH,V,AC) if (CT < 3.0) . 
+
+
+eq recalcule(LH,nilLv) = nilLv . ***Recalcula el hotel favorito y los puntos acumulados (Lista de Viajeros)
+eq recalcule(nilLhotel,LVIA) = LVIA .
+eq recalcule((hotel(IHO,NM,CT,NA,PR,VP,LHOS) LH),(viajero(ID,ML,NH,PT) LVIA)) = viajero(ID,ML,fav(ID,(hotel(IHO,NM,CT,NA,PR,VP,LHOS) LH)," ",0),recpt((PT / 2.0),ID,(hotel(IHO,NM,CT,NA,PR,VP,LHOS) LH))) recalcule(hotel(IHO,NM,CT,NA,PR,VP,LHOS) LH,LVIA) .
+
+eq fav(ID,nilLhotel,NH,I) = NH . ***OP Auxiliar, Retorna el hotel favorito. (String nombre)
+ceq fav(ID,hotel(IHO,NM,CT,NA,PR,VP,LHOS) LH,NH,I) = fav(ID,LH,NM,esta(LHOS,ID)) if (esta(LHOS,ID) > I ) .
+ceq fav(ID,hotel(IHO,NM,CT,NA,PR,VP,LHOS) LH,NH,I) = fav(ID,LH,NH,I) if (esta(LHOS,ID) <= I ) .
+
+eq esta(nilLHosp,ID) = 0 . ***OP Auxiliar, retorna la cantidad de estadías (Int)
+ceq esta(hospedado(IDD,HAB,N) LHOS,ID) = esta(LHOS,ID) if (ID =/= IDD) .
+ceq esta(hospedado(IDD,HAB,N) LHOS,ID) = 1 + esta(LHOS,ID) if (ID == IDD) .
+
+eq recpt(PT,ID,nilLhotel) = 0.0 . ***OP Auxiliar, Recalcula los puntos (Float)
+eq recpt(PT,ID,hotel(IHO,NM,CT,NA,PR,VP,(hospedado(IDD,HAB,N) LHOS)) LH) =  PT + ((CT * 10.0) * estanoches((hospedado(IDD,HAB,N) LHOS),ID) + recpt(PT,ID,LH)) .
+
+eq estanoches(nilLHosp,ID) = 0.0 . ***OP Auxiliar, retorna la cantidad de noches para un viajero (Float)
+ceq estanoches(hospedado(IDD,HAB,N) LHOS,ID) = estanoches(LHOS,ID) if (ID =/= IDD) .
+ceq estanoches(hospedado(IDD,HAB,N) LHOS,ID) = N + estanoches(LHOS,ID) if (ID == IDD) .
+
+endfm
