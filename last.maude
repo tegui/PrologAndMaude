@@ -1,0 +1,162 @@
+fmod TAREA is
+
+protecting INT .
+protecting STRING .
+protecting FLOAT .
+protecting BOOL .
+
+sort hotel . 
+sort viajero .
+sort estadia .
+sort telefono .
+
+sort LH . ****2.3 
+subsort hotel < LH .
+sort LT .  ****2.4
+subsort telefono < LT .
+
+sort LV . ****2.6
+subsort viajero < LV .
+sort Lest .
+subsort estadia < Lest . 
+
+
+op hotel(_,_,_,_,_,_,_) : Int String String Float Float Float Float -> hotel [ctor] .
+op hotel(_,_,_,_,_,_,_,_) : Int String String String Float Float Float Float -> hotel [ctor] .
+op hotel(_,_,_,_,_,_,_,_,_) : Int String String String Float Float Float Float Lest -> hotel [ctor] .
+op viajero(_,_,_) : Int String Float -> viajero [ctor] .
+op estadia(_,_) : Float Float -> estadia [ctor] .
+op estadia(_,_,_,_): Int Int Float Float -> estadia [ctor] .
+op telefono(_,_) : String String -> telefono [ctor] .
+
+
+op nilLH : -> LH [ctor] . *** OP LH 2.3
+op _ _ : LH LH -> LH  [ctor assoc id: nilLH] .
+
+op nilLT : -> LT [ctor] . *** OP LT 2.4
+op _ _ : LT LT -> LT  [ctor assoc id: nilLT] .
+
+op nilLV : -> LV [ctor] .  *** OP LV 2.6
+op _ _ : LV LV -> LV [ctor assoc id: nilLV] .
+
+op nilLest : -> Lest [ctor] .
+op _ _ : Lest Lest -> Lest [ctor assoc id: nilLest] .
+
+
+op calcular(_,_,_) : hotel viajero estadia -> Float .
+op recargo(_,_,_,_,_,_) : Float Float Float Float String String -> Float .
+op hallar(_,_,_) : estadia LH viajero -> hotel . 
+op minx(_,_,_,_) : LH viajero estadia Float -> Bool .
+op tel(_,_,_,_,_) : LT LH estadia viajero Float -> LT .
+
+op recalcule(_,_) : LH LV -> LV .
+op fav(_,_,_,_) : Int LH String Int -> String .
+op esta(_,_) : Lest Int -> Int .
+
+
+
+vars ID IDV I IV : Int .
+vars CD NM HT TL NH : String .
+vars PR PC CT VP PT N P AC Pres : Float .
+var LH : LH .
+var V : viajero .
+var Es : estadia .
+var LT : LT .
+var LE : Lest .
+
+
+ceq calcular(hotel(ID,CD,NM,CT,PR,PC,VP),viajero(IDV,HT,PT),estadia(N,P)) = ((((N * PR) + recargo(N,PR,P,PC,NM,HT)) + ((0.03 * CT) * ((N * PR) + recargo(N,PR,P,PC,NM,HT)))) - (VP * PT)) if (((N * PR) + recargo(N,PR,P,PC,NM,HT)) >= (PT * VP)) .
+eq calcular(hotel(ID,CD,NM,CT,PR,PC,VP),viajero(IDV,HT,PT),estadia(N,P)) = (0.03 * CT) * (N * PR) .
+
+
+ceq recargo(N,PR,P,PC,NM,HT) = (0.2 * N * PR) if ((P >= PC) and (NM =/= HT)) .
+eq recargo(N,PR,P,PC,NM,HT) = 0.0 .
+
+
+
+
+
+*** 2.4
+
+eq hallar(estadia(N,P),nilLH,V) = nilLH .  ***Halla el hotel más económico que sea mayor de 3 estrellas (Hotel)
+ceq hallar(estadia(N,P),hotel(ID,CD,NM,CT,PR,PC,VP) LH,V) = hotel(ID,CD,NM,CT,PR,PC,VP) if ((CT > 2.0) and minx(LH,V,estadia(N,P),calcular(hotel(ID,CD,NM,CT,PR,PC,VP),V,estadia(N,P)))) .
+ceq hallar(estadia(N,P),hotel(ID,CD,NM,CT,PR,PC,VP) LH,V) = hallar(estadia(N,P),LH,V) if (((CT > 2.0) and not(minx(LH,V,estadia(N,P),calcular(hotel(ID,CD,NM,CT,PR,PC,VP),V,estadia(N,P))))) or (CT < 3.0)) .
+***ceq hallar(N,hotel(ID,CD,NM,CT,PR,PC,VP) LH,V) = hallar(N,LH,V) if (CT < 3.0) .
+
+eq minx(nilLH,viajero(IDV,HT,PT),estadia(N,P),AC) = true . ***OP Auxiliar para hallar el hotel mas economico
+ceq minx(hotel(ID,CD,NM,CT,PR,PC,VP) LH,V,estadia(N,P),AC) = false if ((CT > 2.0) and (AC > (calcular(hotel(ID,CD,NM,CT,PR,PC,VP),V,estadia(N,P))))) .
+ceq minx(hotel(ID,CD,NM,CT,PR,PC,VP) LH,V,estadia(N,P),AC) = minx(LH,V,estadia(N,P),AC) if ((CT > 2.0) and (AC < calcular(hotel(ID,CD,NM,CT,PR,PC,VP),V,estadia(N,P)))) .
+ceq minx(hotel(ID,CD,NM,CT,PR,PC,VP) LH,V,estadia(N,P),AC) = minx(LH,V,estadia(N,P),AC) if (CT < 3.0) .
+
+
+
+***2.5  Tener en cuenta que dada la formulacion del problema, se crean lista de telefonos y se
+***Sobrecarga el constructor del Hotel para que reciba un dato mas por hotel, que es el telefono
+***Identificado con la Variable TL y es de tipo String
+
+eq tel(LT,nilLH,Es,V,Pres) = nilLT .
+ceq tel(LT,hotel(ID,CD,NM,TL,CT,PR,PC,VP),Es,V,Pres) = (telefono(NM,TL) LT) if ((Pres > calcular(hotel(ID,CD,NM,CT,PR,PC,VP),V,Es)) and (CT > 2.0)) .
+
+ceq tel(LT,hotel(ID,CD,NM,TL,CT,PR,PC,VP) LH,estadia(N,P),V,Pres) = tel(LT,LH,estadia(N,P),V,Pres) if ((CT < 3.0)) .
+
+ceq tel(LT,hotel(ID,CD,NM,TL,CT,PR,PC,VP) LH,estadia(N,P),V,Pres) = (telefono(NM,TL) tel(LT,LH,estadia(N,P),V,Pres)) if ((Pres > calcular(hotel(ID,CD,NM,CT,PR,PC,VP),V,estadia(N,P))) and (CT > 2.0)) .
+
+
+ceq tel(LT,hotel(ID,CD,NM,TL,CT,PR,PC,VP) LH,estadia(N,P),V,Pres) = tel(LT,LH,estadia(N,P),V,Pres) if ((Pres < calcular(hotel(ID,CD,NM,CT,PR,PC,VP),V,estadia(N,P))) or (CT < 2.0)) .
+
+
+
+***2.7
+
+eq recalcule(LH,nilLV) = nilLV .
+eq recalcule(nilLH, LV) = LV .
+eq recalcule (hotel(ID,CD,NM,TL,CT,PR,PC,VP,LE) LH, viajero(IDV,HT,PT) LV) = viajero(IDV,fav(IDV, hotel(ID,CD,NM,TL,CT,PR,PC,VP,LE) LH," ",0),recpt((PT / 2.0),IDV,hotel(ID,CD,NM,TL,CT,PR,PC,VP,LE) LH))) recalcule(hotel(ID,CD,NM,TL,CT,PR,PC,VP,LE) LH,LV) .
+
+
+eq fav(IDV,nilLhotel,NH,I) = NH . ***OP Auxiliar, Retorna el hotel favorito. (String nombre)
+ceq fav(IDV,hotel(ID,CD,NM,TL,CT,PR,PC,VP,LE) LH,NH,I) = fav(IDV,LH,NM,esta(LE,IDV)) if (esta(LE,IDV) > I ) .
+ceq fav(IDV,hotel(ID,CD,NM,TL,CT,PR,PC,VP,LE) LH,NH,I) = fav(IDV,LH,NH,I) if (esta(LE,IDV) <= I ) .
+
+
+eq esta(nilLest,IDV) = 0 . ***OP Auxiliar, retorna la cantidad de estadías (Int)
+ceq esta(estadia(IDE,IV,N,P) LE,IDV) = esta(LE,IDV) if (IDV =/= IV) .
+ceq esta(estadia(IDE,IV,N,P) LE,IDV) = 1 + esta(LE,IDV) if (IDV == IV) .
+
+
+
+eq recpt(PT,IDV,nilLhotel) = 0.0 . ***OP Auxiliar, Recalcula los puntos (Float)
+eq recpt(PT,IDV,hotel(ID,CD,NM,TL,CT,PR,PC,VP,(estadia(IDE,IV,N,P) LE)) LH) =  PT + ((CT * 10.0) * estanoches((estadia(IDE,IV,N,P) LE),IDV) + recpt(PT,IDV,LH)) .
+
+eq estanoches(nilLest,IDV) = 0.0 . ***OP Auxiliar, retorna la cantidad de noches para un viajero (Float)
+ceq estanoches(estadia(IDE,IV,N,P) LE,IDV) = estanoches(LE,IDV) if (IDV =/= IV) .
+ceq estanoches(estadia(IDE,IV,N,P) LE,IDV) = N + estanoches(LE,IDV) if (IDV == IV) .
+
+
+
+endfm
+
+
+
+
+fmod LISTAS is
+
+protecting TAREA .
+
+op L1 : -> LH .
+
+op HPR : -> hotel .
+
+op VIA : -> viajero .
+
+op EST : -> estadia .
+
+eq HPR = hotel(2,"Medallo","Hotel Farango","2834567",4.0,45000.0,20.0,1060.0) .
+eq VIA = viajero(24,"Hotel Lenin",5.0) .
+eq EST = estadia(2.0,5.0) .
+eq L1 = HPR .
+
+eq HPR = nilLH .
+
+
+
+endfm
